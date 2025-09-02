@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace AutoFilter.Core
 {
@@ -9,7 +8,7 @@ namespace AutoFilter.Core
 
     public static class SortQueryExtensions
     {
-        public static IOrderedQueryable<TEntity> Apply<TEntity>(this IQueryable<TEntity> query, Sort sort, bool isThenBy = false)
+        public static IOrderedQueryable<TEntity> Apply<TEntity>(this IQueryable<TEntity> query, Sort sort)
         {
             if (!string.IsNullOrWhiteSpace(sort.Field))
             {
@@ -22,11 +21,13 @@ namespace AutoFilter.Core
 
                 Expression<Func<IOrderedQueryable<TEntity>>> sortMethod = default!;
 
+                bool isThenBy = Shared.IsOrdered(query);
+
                 sortMethod = sort.Dir switch
                 {
-                   Dir.Asc => sortMethod = !isThenBy
-                        ? () => query.OrderBy<TEntity, object>(k => default!)
-                        : () => ((IOrderedQueryable<TEntity>)query).ThenBy<TEntity, object>(k => default!),
+                    Dir.Asc => sortMethod = !isThenBy
+                         ? () => query.OrderBy<TEntity, object>(k => default!)
+                         : () => ((IOrderedQueryable<TEntity>)query).ThenBy<TEntity, object>(k => default!),
                     _ => sortMethod = !isThenBy
                         ? () => query.OrderByDescending<TEntity, object>(k => default!)
                         : () => ((IOrderedQueryable<TEntity>)query).ThenByDescending<TEntity, object>(k => default!)
@@ -42,6 +43,6 @@ namespace AutoFilter.Core
             {
                 return (IOrderedQueryable<TEntity>)query;
             }
-        }        
+        }
     }
 }

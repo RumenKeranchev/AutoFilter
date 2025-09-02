@@ -6,7 +6,7 @@ namespace AutoFilter.DemoDb
     {
         [StringLength(20), Required]
         public required string Number { get; set; }
-                        
+
         public required string Type { get; set; }
 
         public required string Status { get; set; }

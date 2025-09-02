@@ -24,6 +24,7 @@ class Program
     record Dto
     {
         public required string Number { get; set; }
+
         public required int Id { get; set; }
 
         public decimal Total { get; set; }

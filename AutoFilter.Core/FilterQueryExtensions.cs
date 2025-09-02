@@ -107,7 +107,7 @@ namespace AutoFilter.Core
                 else if (value.Type == typeof(bool))
                 {
                     expressionBody = filter!.Operator switch
-                    {                        
+                    {
                         Operator.Equal => Expression.Equal(field, value),
                         Operator.NotEqual => Expression.NotEqual(field, value),
                         _ => throw new ArgumentOutOfRangeException($"Invalid operator [{filter.Operator}] provided for value type [{value.Type.Name}]")
