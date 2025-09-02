@@ -1,5 +1,4 @@
-﻿using AutoFilter.Core;
-using AutoFilter.DemoDb;
+﻿using AutoFilter.DemoDb;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -9,23 +8,21 @@ class Program
     {
         var db = new AppDbContext();
 
-        Expression<Func<InvoiceDetail, Dto>> castExpr = x => new() { Number = x.Invoice!.Number, Id = x.Invoice_Id, Total = x.Invoice.Total };
+        Expression<Func<Invoice, Invoice>> castExpr = x => new() { DueDate = x.DueDate };
 
-        var invoice = await db.InvoiceDetails
+        var invoice = await db.Invoices
+            .OrderBy(x => x.DueDate)
             .Select(castExpr)
-            .Apply(new Sort("number", Dir.Desc))
-            .Apply(new Filter("number", Operator.NotContains, "02"))
-            .Apply(new Filter("number", Operator.NotContains, "in"))
-            .FirstOrDefaultAsync();
+            .ToListAsync();
 
-        Console.WriteLine(invoice);
+        invoice.ForEach(i => Console.WriteLine(i.DueDate));
     }
 
     record Dto
     {
-        public required string Number { get; set; }
+        //public required string Number { get; set; }
 
-        public required int Id { get; set; }
+        //public required int Id { get; set; }
 
         public decimal Total { get; set; }
     }
