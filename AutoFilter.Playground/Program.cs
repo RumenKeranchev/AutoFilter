@@ -1,7 +1,5 @@
-﻿using AutoFilter.Core;
-using AutoFilter.DemoDb;
+﻿using AutoFilter.DemoDb;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 class Program
 {
@@ -9,13 +7,12 @@ class Program
     {
         var db = new AppDbContext();
 
-        Expression<Func<Invoice, Invoice>> castExpr = x => new() { DueDate = x.DueDate };
-
         var invoice = await db.Invoices
-            .Select(x => new { x.DueDate })
-            .Apply(new Sort("DueDate", Dir.Asc))
+            .OrderBy(x => x.Number)
+            //.ThenByDescending(x => x.Number)
+            .Select(x => new { x.Number, x.Total })            
             .ToListAsync();
 
-        invoice.ForEach(i => Console.WriteLine(i));
+        invoice.ForEach(Console.WriteLine);
     }
 }

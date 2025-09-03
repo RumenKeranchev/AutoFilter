@@ -6,7 +6,7 @@ namespace AutoFilter.DemoDb
 {
     public class AppDbContext : IdentityDbContext<IdentityUser>
     {
-        public AppDbContext() : base(new DbContextOptionsBuilder<AppDbContext>().UseInMemoryDatabase("AutoFilter").Options)
+        public AppDbContext() : base(new DbContextOptionsBuilder<AppDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options)
         {
             Database.EnsureCreated();
             Seed();
@@ -56,6 +56,14 @@ namespace AutoFilter.DemoDb
                     Number = "INV-1003",
                     Type = "Invoice",
                     Status = "Sent",
+                    DueDate = new DateTime(2025, 09, 27, 0, 0, 0, DateTimeKind.Local),
+                    Total = 18,
+                },
+                new()
+                {
+                    Number = "INV-1004",
+                    Type = "Invoice",
+                    Status = "Draft",
                     DueDate = new DateTime(2025, 09, 27, 0, 0, 0, DateTimeKind.Local),
                     Total = 18,
                 },

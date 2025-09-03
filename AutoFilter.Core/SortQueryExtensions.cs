@@ -15,7 +15,7 @@ namespace AutoFilter.Core
                 Shared.ValidateQueryIsProjected(query);
 
                 var entity = Expression.Parameter(typeof(TEntity));
-                var field = Expression.PropertyOrField(entity, sort.Field) ?? throw new NullReferenceException("Invalid property");
+                var field = Expression.PropertyOrField(entity, sort.Field);
 
                 var sortLambda = Expression.Lambda(field, entity);
 
@@ -41,7 +41,7 @@ namespace AutoFilter.Core
             }
             else
             {
-                return (IOrderedQueryable<TEntity>)query;
+                throw new InvalidOperationException("Sort column cannot be null or empty");
             }
         }
     }
