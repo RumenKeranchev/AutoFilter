@@ -1,5 +1,6 @@
 ﻿using AutoFilter.Core;
 using AutoFilter.DemoDb;
+using Newtonsoft.Json.Linq;
 using System.Linq.Expressions;
 
 namespace AutoFilter.Tests
@@ -27,9 +28,12 @@ namespace AutoFilter.Tests
         }
 
         [Test]
-        public void Invalid_Column_Should_Throw()
+        [TestCase("gibberish")]
+        [TestCase("nUmBer ")]
+        [TestCase(" nUmBer")]
+        public void Invalid_Column_Should_Throw(string field)
         {
-            var invalidFilter = new Filter("gibberish", Operator.Equal, "Value");
+            var invalidFilter = new Filter(field, Operator.Equal, "Value");
             Expression<Func<Invoice, Invoice>> castExp = x => new() { Number = x.Number, Total = x.Total };
 
             Assert.Throws<ArgumentException>(() =>
@@ -55,15 +59,17 @@ namespace AutoFilter.Tests
         }
 
         [Test]
-        [TestCase("2025-13-13")]
-        [TestCase("2025-03-33")]
-        [TestCase("20250333")]
-        [TestCase("random")]
-        [TestCase("random")]
-        public void Invalid_Value_Should_Throw(string value)
+        [TestCase("SentDate", "2025-13-13")]
+        [TestCase("SentDate", "2025-03-33")]
+        [TestCase("SentDate", "20250333")]
+        [TestCase("SentDate", "random")]
+        [TestCase("SentDate", "random")]
+        [TestCase("IsPaid", "random")]
+        [TestCase("Total", "random")]
+        public void Invalid_Value_Should_Throw(string field, string value)
         {
-            var invalidFilter = new Filter("SentDate", Operator.Equal, value);
-            Expression<Func<Invoice, Invoice>> castExp = x => new() { Number = x.Number, SentDate = x.SentDate };
+            var invalidFilter = new Filter(field, Operator.Equal, value);
+            Expression<Func<Invoice, Invoice>> castExp = x => new() { Total = x.Total, SentDate = x.SentDate, IsPaid = x.IsPaid };
 
             Assert.Throws<FormatException>(() =>
             {
@@ -180,7 +186,7 @@ namespace AutoFilter.Tests
         [TestCase(Operator.Equal, "2025-09-29 21:00", null)]
         [TestCase(Operator.NotEqual, "2025-10-02 16:00", "2025-09-17 07:30")]
         [TestCase(Operator.NotEqual, "2025-10-02 15:00", "2025-09-17 07:30")]
-        [TestCase(Operator.GreaterThan, "2025-09-17 07:30", "2025-09-22 11:00")]
+        [TestCase(Operator.GreaterThan, "2025-09-17 07:30", "2025-09-17 09:00")]
         [TestCase(Operator.GreaterThan, "2025-10-10 07:30", null)]
         [TestCase(Operator.GreaterThanOrEqual, "2025-09-17 07:30", "2025-09-17 07:30")]
         [TestCase(Operator.GreaterThanOrEqual, "2025-09-17 08:00", "2025-09-17 09:00")]
@@ -209,6 +215,47 @@ namespace AutoFilter.Tests
             {
                 Assert.That(invoice.DueDate, Is.EqualTo(DateTime.Parse(expected)));
             }
+        }
+
+        [Test]
+        [TestCase(Operator.Equal, "true", true)]
+        [TestCase(Operator.Equal, "false", false)]
+        [TestCase(Operator.NotEqual, "false", true)]
+        [TestCase(Operator.NotEqual, "true", false)]
+        public void Valid_Bool_Filter_Should_Work(Operator op, string value, bool expected)
+        {
+            var filter = new Filter("ispaid", op, value);
+            Expression<Func<Invoice, Invoice>> castExp = x => new() { IsPaid = x.IsPaid };
+
+            var invoice = Db.Invoices
+                .OrderBy(x => x.Id)
+                .Select(castExp)
+                .Apply(filter)
+                .FirstOrDefault();
+
+            Assert.That(invoice, Is.Not.Null);
+            Assert.That(invoice.IsPaid, Is.EqualTo(expected));
+        }
+
+        [Test]
+        [TestCase("status", Operator.Equal, "sent", "duedate", Operator.GreaterThanOrEqual, "2025-10-02 15:00", "INV-1001")]
+        [TestCase("duedate", Operator.GreaterThan, "2025-09-17 07:30", "duedate", Operator.LessThanOrEqual, "2025-09-17 09:00", "CRN-1002")]
+        [TestCase("type", Operator.Equal, "invoice", "ispaid", Operator.NotEqual, "false", "INV-1001")]
+        public void Multiple_Valid_Filters_Should_Work(string field1, Operator op1, string value1, string field2, Operator op2, string value2, string expected)
+        {
+            var filter1 = new Filter(field1, op1, value1);
+            var filter2 = new Filter(field2, op2, value2);
+
+            Expression<Func<Invoice, Invoice>> castExp = x => x;
+
+            var invoice = Db.Invoices
+                .Select(castExp)
+                .Apply(filter1)
+                .Apply(filter2)
+                .FirstOrDefault();
+
+            Assert.That(invoice, Is.Not.Null);
+            Assert.That(invoice.Number, Is.EqualTo(expected));
         }
     }
 }

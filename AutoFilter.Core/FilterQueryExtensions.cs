@@ -27,7 +27,7 @@ namespace AutoFilter.Core
         /// <returns>Filtered query</returns>
         /// <exception cref="ArgumentOutOfRangeException">Depending on the column type some operators are not allowed</exception>
         /// <exception cref="InvalidOperationException">Thrown if no filter column is provided or the query is not projected</exception>
-        /// <exception cref="FormatException">Thrown if the filter column is DateTime/DateTime? and the value cannot be converted to a valid DateTime</exception>
+        /// <exception cref="FormatException">Thrown if the filter column is DateTime/DateTime?/bool/number and the value cannot be converted to a valid type</exception>
         public static IQueryable<TEntity> Apply<TEntity>(this IQueryable<TEntity> query, Filter filter)
         {
             if (!string.IsNullOrWhiteSpace(filter.Field))
@@ -111,10 +111,10 @@ namespace AutoFilter.Core
                         Operator.NotEqual => Expression.OrElse(
                                     Expression.LessThan(field, start),
                                     Expression.GreaterThanOrEqual(field, end)),
-                        Operator.GreaterThan => Expression.GreaterThanOrEqual(field, end),
+                        Operator.GreaterThan => Expression.GreaterThan(field, start),
                         Operator.GreaterThanOrEqual => Expression.GreaterThanOrEqual(field, start),
-                        Operator.LessThan => Expression.LessThan(field, start),
-                        Operator.LessThanOrEqual => Expression.LessThan(field, end),
+                        Operator.LessThan => Expression.LessThan(field, end),
+                        Operator.LessThanOrEqual => Expression.LessThanOrEqual(field, end),
                         _ => throw new ArgumentOutOfRangeException($"Invalid operator [{filter.Operator}] provided for value type [{value.Type.Name}]")
                     };
                 }
