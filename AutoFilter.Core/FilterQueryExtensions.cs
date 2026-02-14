@@ -20,7 +20,15 @@ namespace AutoFilter.Core
     public static class FilterQueryExtensions
     {
         /// <summary>
-        /// 
+        /// <para>
+        /// Apply filtering to a queryable based on the provided filter. The queryable must be projected and contain the filter column as a property/field. 
+        /// Depending on the column type and operator provided the method will throw exceptions as described below. 
+        /// </para>
+        /// <para>
+        /// <strong><u>Beware of the projection entity constructor!</u></strong> If the properties are set through the constructor for example like a record,
+        /// EntityFramework WILL throw an exception because it cannot translate the expression to SQL. 
+        /// In that case, make sure to have a parameterless constructor and set the properties through the body of the constructor.
+        /// </para>
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="query"></param>

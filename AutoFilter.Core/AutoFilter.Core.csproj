@@ -12,6 +12,9 @@
     <Description>IQueryable extension methods for filtering and sorting projected data</Description>
     <RepositoryUrl>https://github.com/RumenKeranchev/AutoFilter</RepositoryUrl>
     <PackageId>AutoFilter</PackageId>
+    <FileVersion />
+    <Version>1.0.2</Version>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
 </Project>
