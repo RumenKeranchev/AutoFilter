@@ -4,6 +4,14 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>AutoFilter</Title>
+    <Authors>Rumen Keranchev</Authors>
+    <Company />
+    <PackageProjectUrl></PackageProjectUrl>
+    <Description>IQueryable extension methods for filtering and sorting projected data</Description>
+    <RepositoryUrl>https://github.com/RumenKeranchev/AutoFilter</RepositoryUrl>
+    <PackageId>AutoFilter</PackageId>
   </PropertyGroup>
 
 </Project>
