@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Globalization;
+using System.Linq.Expressions;
 
 namespace AutoFilter.Core
 {
@@ -51,7 +52,17 @@ namespace AutoFilter.Core
 
                     if (filter.Value != null)
                     {
-                        object convertedValue = Convert.ChangeType(filter.Value, type!);
+                        if (type == typeof(decimal) || type == typeof(decimal?))
+                        {
+                            int lastIndexOfComma = filter.Value.LastIndexOf(',');
+
+                            if (lastIndexOfComma != -1)
+                            {
+                                filter = filter with { Value = filter.Value.Remove(lastIndexOfComma, 1).Insert(lastIndexOfComma, ".").Replace(",", "") };
+                            }
+                        }
+
+                        object convertedValue = Convert.ChangeType(filter.Value, type!, CultureInfo.InvariantCulture);
                         value = Expression.Constant(convertedValue);
                     }
                     else

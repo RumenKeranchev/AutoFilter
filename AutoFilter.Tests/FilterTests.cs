@@ -1,6 +1,5 @@
 ﻿using AutoFilter.Core;
 using AutoFilter.DemoDb;
-using Newtonsoft.Json.Linq;
 using System.Linq.Expressions;
 
 namespace AutoFilter.Tests
@@ -157,16 +156,28 @@ namespace AutoFilter.Tests
         [Test]
         [TestCase(Operator.GreaterThan, "18", 24)]
         [TestCase(Operator.GreaterThan, "24", null)]
+        [TestCase(Operator.GreaterThan, "-9.6", 24)]
+        [TestCase(Operator.GreaterThan, "-9,6", 24)]
         [TestCase(Operator.GreaterThanOrEqual, "24", 24)]
         [TestCase(Operator.GreaterThanOrEqual, "25", null)]
+        [TestCase(Operator.GreaterThanOrEqual, "-9.6", 24)]
+        [TestCase(Operator.GreaterThanOrEqual, "-9,6", 24)]
         [TestCase(Operator.LessThan, "24", 12)]
         [TestCase(Operator.LessThan, "-10", null)]
+        [TestCase(Operator.LessThan, "-9.6", null)]
+        [TestCase(Operator.LessThan, "-9,6", null)]
         [TestCase(Operator.LessThanOrEqual, "24", 24)]
         [TestCase(Operator.LessThanOrEqual, "-10", null)]
+        [TestCase(Operator.LessThanOrEqual, "-9.6", -9.6)]
+        [TestCase(Operator.LessThanOrEqual, "-9,6", -9.6)]
         [TestCase(Operator.Equal, "12", 12)]
         [TestCase(Operator.Equal, "35", null)]
+        [TestCase(Operator.Equal, "-9.6", -9.6)]
+        [TestCase(Operator.Equal, "-9,6", -9.6)]
         [TestCase(Operator.NotEqual, "24", 12)]
         [TestCase(Operator.NotEqual, "65", 24)]
+        [TestCase(Operator.NotEqual, "-9.6", 24)]
+        [TestCase(Operator.NotEqual, "-9,6", 24)]
         public void Valid_Number_Filter_Should_Work(Operator op, string value, decimal? expected)
         {
             var filter = new Filter("total", op, value);

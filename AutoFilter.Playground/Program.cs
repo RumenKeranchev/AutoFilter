@@ -10,7 +10,7 @@ class Program
         var invoice = await db.Invoices
             .OrderBy(x => x.Number)
             //.ThenByDescending(x => x.Number)
-            .Select(x => new { x.Number, x.Total })            
+            .Select(x => new { x.Number, x.Total })
             .ToListAsync();
 
         invoice.ForEach(Console.WriteLine);

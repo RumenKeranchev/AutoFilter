@@ -62,7 +62,7 @@ namespace AutoFilter.Tests
         {
             Expression<Func<Invoice, Invoice>> castExp = x => new() { Number = x.Number, Total = x.Total };
             var sort = new Sort("Number", Dir.Asc);
-           
+
             var query = Db.Invoices
                 .Select(castExp)
                 .Apply(sort)
