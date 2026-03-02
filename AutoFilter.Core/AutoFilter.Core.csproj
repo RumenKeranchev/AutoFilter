@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/RumenKeranchev/AutoFilter</RepositoryUrl>
     <PackageId>AutoFilter</PackageId>
     <FileVersion />
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
