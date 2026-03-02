@@ -113,27 +113,22 @@ namespace AutoFilter.Core
                     };
                 }
                 else if ((value.Type == typeof(DateTime) || value.Type == typeof(DateTime?))
-                    && DateTime.TryParse(filter.Value, out var parsedDate))
+                    && DateTime.TryParse(filter.Value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var parsedDate))
                 {
                     bool isNullable = field.Type.IsGenericType
                         && field.Type.GetGenericTypeDefinition() == typeof(Nullable<>)
                         && Nullable.GetUnderlyingType(field.Type) == typeof(DateTime);
 
-                    var start = Expression.Constant(parsedDate, isNullable ? typeof(DateTime?) : typeof(DateTime));
-                    var end = Expression.Constant(parsedDate.AddDays(1), isNullable ? typeof(DateTime?) : typeof(DateTime));
+                    var date = Expression.Constant(parsedDate, isNullable ? typeof(DateTime?) : typeof(DateTime));
 
                     expressionBody = filter.Operator switch
                     {
-                        Operator.Equal => Expression.AndAlso(
-                                    Expression.GreaterThanOrEqual(field, start),
-                                    Expression.LessThan(field, end)),
-                        Operator.NotEqual => Expression.OrElse(
-                                    Expression.LessThan(field, start),
-                                    Expression.GreaterThanOrEqual(field, end)),
-                        Operator.GreaterThan => Expression.GreaterThan(field, start),
-                        Operator.GreaterThanOrEqual => Expression.GreaterThanOrEqual(field, start),
-                        Operator.LessThan => Expression.LessThan(field, end),
-                        Operator.LessThanOrEqual => Expression.LessThanOrEqual(field, end),
+                        Operator.Equal => Expression.Equal(field, date),
+                        Operator.NotEqual => Expression.NotEqual(field, date),
+                        Operator.GreaterThan => Expression.GreaterThan(field, date),
+                        Operator.GreaterThanOrEqual => Expression.GreaterThanOrEqual(field, date),
+                        Operator.LessThan => Expression.LessThan(field, date),
+                        Operator.LessThanOrEqual => Expression.LessThanOrEqual(field, date),
                         _ => throw new ArgumentOutOfRangeException($"Invalid operator [{filter.Operator}] provided for value type [{value.Type.Name}]")
                     };
                 }

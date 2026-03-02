@@ -1,9 +1,11 @@
 ﻿using AutoFilter.Core;
 using AutoFilter.DemoDb;
+using System.Globalization;
 using System.Linq.Expressions;
 
 namespace AutoFilter.Tests
 {
+    // TODO: Passing null as a filter throws a NullReferenceException, but it should throw an ArgumentNullException. Fix this in the Apply method and update the test.
     class FilterTests : BaseTests
     {
         [Test]
@@ -193,20 +195,20 @@ namespace AutoFilter.Tests
         }
 
         [Test]
-        [TestCase(Operator.Equal, "2025-09-27 00:00", "2025-09-27 00:00")]
-        [TestCase(Operator.Equal, "2025-09-29 21:00", null)]
-        [TestCase(Operator.NotEqual, "2025-10-02 16:00", "2025-09-17 07:30")]
-        [TestCase(Operator.NotEqual, "2025-10-02 15:00", "2025-09-17 07:30")]
-        [TestCase(Operator.GreaterThan, "2025-09-17 07:30", "2025-09-17 09:00")]
-        [TestCase(Operator.GreaterThan, "2025-10-10 07:30", null)]
-        [TestCase(Operator.GreaterThanOrEqual, "2025-09-17 07:30", "2025-09-17 07:30")]
-        [TestCase(Operator.GreaterThanOrEqual, "2025-09-17 08:00", "2025-09-17 09:00")]
-        [TestCase(Operator.GreaterThanOrEqual, "2025-10-17 08:00", null)]
-        [TestCase(Operator.LessThan, "2025-09-22 11:00", "2025-09-17 07:30")]
-        [TestCase(Operator.LessThan, "2025-09-10 11:00", null)]
-        [TestCase(Operator.LessThanOrEqual, "2025-09-22 11:00", "2025-09-17 07:30")]
-        [TestCase(Operator.LessThanOrEqual, "2025-09-22 10:00", "2025-09-17 07:30")]
-        [TestCase(Operator.LessThanOrEqual, "2025-09-01 10:00", null)]
+        [TestCase(Operator.Equal, "2026-01-07T10:00:00Z", "2026-01-07T10:00:00Z")]
+        [TestCase(Operator.Equal, "2026-01-13 17:50", null)]
+        [TestCase(Operator.NotEqual, "2026-01-10T13:00:00Z", "2026-01-07T10:00:00Z")]
+        [TestCase(Operator.NotEqual, "2026-01-07T10:00:00Z", "2026-01-10T13:00:00Z")]
+        [TestCase(Operator.GreaterThan, "2026-01-28T09:00:00Z", "2026-01-31T16:30:00Z")]
+        [TestCase(Operator.GreaterThan, "2026-01-31T16:30:00Z", null)]
+        [TestCase(Operator.GreaterThanOrEqual, "2026-01-31T16:30:00Z", "2026-01-31T16:30:00Z")]
+        [TestCase(Operator.GreaterThanOrEqual, "2026-01-08T10:00:00Z", "2026-01-10T13:00:00Z")]
+        [TestCase(Operator.GreaterThanOrEqual, "2026-02-07T10:00:00Z", null)]
+        [TestCase(Operator.LessThan, "2026-01-10T13:00:00Z", "2026-01-07T10:00:00Z")]
+        [TestCase(Operator.LessThan, "2026-01-07T10:00:00Z", null)]
+        [TestCase(Operator.LessThanOrEqual, "2026-01-07T10:00:00Z", "2026-01-07T10:00:00Z")]
+        [TestCase(Operator.LessThanOrEqual, "2026-01-20T18:00:00Z", "2026-01-07T10:00:00Z")]
+        [TestCase(Operator.LessThanOrEqual, "2026-01-06T00:00:00Z", null)]
         public void Valid_DateTime_Filter_Should_Work(Operator op, string value, string expected)
         {
             var filter = new Filter("duedate", op, value);
@@ -224,7 +226,7 @@ namespace AutoFilter.Tests
             }
             else
             {
-                Assert.That(invoice.DueDate, Is.EqualTo(DateTime.Parse(expected)));
+                Assert.That(invoice.DueDate, Is.EqualTo(DateTime.Parse(expected, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal)));
             }
         }
 
@@ -250,7 +252,7 @@ namespace AutoFilter.Tests
 
         [Test]
         [TestCase("status", Operator.Equal, "sent", "duedate", Operator.GreaterThanOrEqual, "2025-10-02 15:00", "INV-1001")]
-        [TestCase("duedate", Operator.GreaterThan, "2025-09-17 07:30", "duedate", Operator.LessThanOrEqual, "2025-09-17 09:00", "CRN-1002")]
+        [TestCase("duedate", Operator.GreaterThan, "2026-01-07T10:00:00Z", "duedate", Operator.LessThanOrEqual, "2026-01-20T18:00:00Z", "INV-1001")]
         [TestCase("type", Operator.Equal, "invoice", "ispaid", Operator.NotEqual, "false", "INV-1001")]
         public void Multiple_Valid_Filters_Should_Work(string field1, Operator op1, string value1, string field2, Operator op2, string value2, string expected)
         {

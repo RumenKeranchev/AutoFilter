@@ -1,17 +1,21 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace AutoFilter.DemoDb
 {
     public class AppDbContext : IdentityDbContext<IdentityUser>
     {
         public AppDbContext() : base(new DbContextOptionsBuilder<AppDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options)
+        //public AppDbContext() : base(new DbContextOptionsBuilder<AppDbContext>()
+        //    .UseSqlServer("Server=localhost;Database=AutoFilter;Trusted_Connection=True;Integrated Security=True;MultipleActiveResultSets=True;TrustServerCertificate=True").Options)
         {
             Database.EnsureCreated();
             Seed();
         }
 
+        // All DateTime values are stored in UTC and inputs in Seed() are in UTC.
         void Seed()
         {
             var invoices = new List<Invoice>
@@ -20,8 +24,8 @@ namespace AutoFilter.DemoDb
                     Number = "INV-1001",
                     Type = "Invoice",
                     Status = "Sent",
-                    SentDate = DateTime.UtcNow.Date.AddDays(30).AddHours(15),
-                    DueDate = new DateTime(2025, 10, 2, 15, 0, 0, DateTimeKind.Local),
+                    SentDate =DateTime.Parse("2026-01-05 08:00", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
+                    DueDate = DateTime.Parse("2026-01-10 13:00", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
                     IsPaid = true,
                     Total = 24,
                 },
@@ -30,7 +34,7 @@ namespace AutoFilter.DemoDb
                     Number = "INV-1002",
                     Type = "Invoice",
                     Status = "Draft",
-                    DueDate = new DateTime(2025, 09, 17, 07, 30, 0, DateTimeKind.Local),
+                    DueDate = DateTime.Parse("2026-01-31 16:30", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
                     Total = 12,
                 },
                 new()
@@ -38,8 +42,8 @@ namespace AutoFilter.DemoDb
                     Number = "CRN-1001",
                     Type = "Credit Note",
                     Status = "Sent",
-                    DueDate = new DateTime(2025, 09, 22, 11, 0, 0, DateTimeKind.Local),
-                    SentDate = DateTime.UtcNow.Date.AddDays(20).AddHours(11),
+                    SentDate =DateTime.Parse("2026-01-12 14:30", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
+                    DueDate = DateTime.Parse("2026-01-20 18:00", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
                     IsPaid = true,
                     Total = -6,
                 },
@@ -48,7 +52,7 @@ namespace AutoFilter.DemoDb
                     Number="CRN-1002",
                     Type = "Credit Note",
                     Status = "Draft",
-                    DueDate = new DateTime(2025, 09, 17, 09, 0, 0, DateTimeKind.Local),
+                    DueDate = DateTime.Parse("2026-01-21 15:00", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
                     Total = -9.6m,
                 },
                 new()
@@ -56,7 +60,7 @@ namespace AutoFilter.DemoDb
                     Number = "INV-1003",
                     Type = "Invoice",
                     Status = "Sent",
-                    DueDate = new DateTime(2025, 09, 27, 0, 0, 0, DateTimeKind.Local),
+                    DueDate = DateTime.Parse("2026-01-07 10:00", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
                     Total = 18,
                 },
                 new()
@@ -64,7 +68,7 @@ namespace AutoFilter.DemoDb
                     Number = "INV-1004",
                     Type = "Invoice",
                     Status = "Draft",
-                    DueDate = new DateTime(2025, 09, 27, 0, 0, 0, DateTimeKind.Local),
+                    DueDate = DateTime.Parse("2026-01-28 09:00", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
                     Total = 18,
                 },
             };

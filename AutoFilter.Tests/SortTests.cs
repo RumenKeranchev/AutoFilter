@@ -69,7 +69,7 @@ namespace AutoFilter.Tests
                 .ToList();
 
             Assert.That(query, Has.Count.EqualTo(6));
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(query[0].Number, Is.EqualTo("CRN-1001"));
                 Assert.That(query[1].Number, Is.EqualTo("CRN-1002"));
@@ -77,7 +77,7 @@ namespace AutoFilter.Tests
                 Assert.That(query[3].Number, Is.EqualTo("INV-1002"));
                 Assert.That(query[4].Number, Is.EqualTo("INV-1003"));
                 Assert.That(query[5].Number, Is.EqualTo("INV-1004"));
-            });
+            }
 
             sort = new Sort("Number", Dir.Desc);
             query = [.. Db.Invoices
@@ -85,7 +85,7 @@ namespace AutoFilter.Tests
                 .Apply(sort)];
 
             Assert.That(query, Has.Count.EqualTo(6));
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(query[0].Number, Is.EqualTo("INV-1004"));
                 Assert.That(query[1].Number, Is.EqualTo("INV-1003"));
@@ -93,7 +93,7 @@ namespace AutoFilter.Tests
                 Assert.That(query[3].Number, Is.EqualTo("INV-1001"));
                 Assert.That(query[4].Number, Is.EqualTo("CRN-1002"));
                 Assert.That(query[5].Number, Is.EqualTo("CRN-1001"));
-            });
+            }
         }
 
         [Test]
@@ -110,7 +110,7 @@ namespace AutoFilter.Tests
                 .ToList();
 
             Assert.That(query, Has.Count.EqualTo(6));
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 Assert.That(query[0].Type, Is.EqualTo("Credit Note"));
                 Assert.That(query[0].Number, Is.EqualTo("CRN-1002"));
@@ -124,7 +124,7 @@ namespace AutoFilter.Tests
                 Assert.That(query[4].Number, Is.EqualTo("INV-1002"));
                 Assert.That(query[5].Type, Is.EqualTo("Invoice"));
                 Assert.That(query[5].Number, Is.EqualTo("INV-1001"));
-            });
+            }
         }
     }
 }
